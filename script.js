@@ -25,8 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	if (menuToggle) {
 		menuToggle.addEventListener('click', () => {
-			menu.classList.toggle('active');
+			const active = menu.classList.toggle('active');
 			menuToggle.classList.toggle('active');
+			menuToggle.setAttribute('aria-expanded', active);
 		});
 	}
 

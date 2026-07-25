@@ -655,11 +655,49 @@ footer a {
 
 @media (max-width: 768px) {
 	.menu {
-		display: none;
+		display: flex;
+		position: absolute;
+		top: 72px;
+		left: 0;
+		width: 100%;
+		background: white;
+		flex-direction: column;
+		align-items: center;
+		gap: 25px;
+		padding: 30px 0;
+		box-shadow: 0 15px 30px rgba(0, 0, 0, .08);
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-20px);
+		transition: .3s ease;
+	}
+
+	.menu.active {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
 	}
 
 	.menu-toggle {
 		display: block;
+		cursor: pointer;
+		z-index: 1000;
+	}
+
+	.menu-toggle.active span:nth-child(1) {
+		transform: translateY(8px) rotate(45deg);
+	}
+
+	.menu-toggle.active span:nth-child(2) {
+		opacity: 0;
+	}
+
+	.menu-toggle.active span:nth-child(3) {
+		transform: translateY(-8px) rotate(-45deg);
+	}
+
+	.menu-toggle span {
+		transition: .3s ease;
 	}
 
 	.nav-button {
