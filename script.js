@@ -1,204 +1,136 @@
 document.addEventListener('DOMContentLoaded', () => {
-	document.getElementById("year").textContent = new Date().getFullYear();
+  const year = document.getElementById('year');
+  const header = document.querySelector('.header');
+  const backToTop = document.querySelector('.back-to-top');
+  const menuToggle = document.querySelector('.menu-toggle');
+  const menu = document.querySelector('.menu');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-	const header = document.querySelector('.header');
-	const backToTop = document.querySelector('.back-to-top');
+  if (year) year.textContent = new Date().getFullYear();
 
-	window.addEventListener('scroll', () => {
-		if (window.scrollY > 80) {
-			header.classList.add('scrolled');
-		} else {
-			header.classList.remove('scrolled');
-		}
+  let lastScroll = 0;
+  const handleScroll = () => {
+    const current = window.scrollY;
+    header?.classList.toggle('scrolled', current > 50);
+    backToTop?.classList.toggle('show', current > 500);
 
-		if (backToTop) {
-			if (window.scrollY > 400) {
-				backToTop.classList.add('show');
-			} else {
-				backToTop.classList.remove('show');
-			}
-		}
-	});
+    if (!menu?.classList.contains('active')) {
+      header.style.transform = current > lastScroll && current > 350 ? 'translateY(-115%)' : 'translateY(0)';
+    }
+    lastScroll = Math.max(current, 0);
+  };
 
-	const menuToggle = document.querySelector('.menu-toggle');
-	const menu = document.querySelector('.menu');
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
 
-	if (menuToggle) {
-		menuToggle.addEventListener('click', () => {
-			const active = menu.classList.toggle('active');
-			menuToggle.classList.toggle('active');
-			menuToggle.setAttribute('aria-expanded', active);
-		});
-	}
+  const closeMenu = () => {
+    menu?.classList.remove('active');
+    menuToggle?.classList.remove('active');
+    menuToggle?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('menu-open');
+  };
 
-	document.querySelectorAll('.menu a').forEach((link) => {
-		link.addEventListener('click', () => {
-			menu.classList.remove('active');
-			menuToggle.classList.remove('active');
-		});
-	});
+  menuToggle?.addEventListener('click', () => {
+    const active = menu?.classList.toggle('active');
+    menuToggle.classList.toggle('active', active);
+    menuToggle.setAttribute('aria-expanded', String(active));
+    document.body.classList.toggle('menu-open', active);
+  });
 
-	const reveals = document.querySelectorAll('.reveal');
+  document.querySelectorAll('.menu a').forEach((link) => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeMenu(); });
 
-	const revealObserver = new IntersectionObserver(
-		(entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					entry.target.classList.add('active');
-					revealObserver.unobserve(entry.target);
-				}
-			});
-		},
-		{
-			threshold: 0.15,
-		},
-	);
+  const reveals = document.querySelectorAll('.reveal');
+  if (reducedMotion || !('IntersectionObserver' in window)) {
+    reveals.forEach((el) => el.classList.add('active'));
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: .12, rootMargin: '0px 0px -40px' });
+    reveals.forEach((el) => observer.observe(el));
+  }
 
-	reveals.forEach((element) => {
-		revealObserver.observe(element);
-	});
+  const testimonials = [...document.querySelectorAll('.testimonial')];
+  const dotsContainer = document.querySelector('.testimonial-dots');
+  let testimonialIndex = 0;
+  let testimonialTimer;
 
-	const counters = document.querySelectorAll('[data-counter]');
+  const showTestimonial = (index) => {
+    testimonialIndex = index;
+    testimonials.forEach((item, i) => item.classList.toggle('active', i === index));
+    document.querySelectorAll('.testimonial-dot').forEach((dot, i) => dot.classList.toggle('active', i === index));
+  };
 
-	const counterObserver = new IntersectionObserver(
-		(entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					const counter = entry.target;
-					const target = Number(counter.dataset.counter);
-					let value = 0;
-					const duration = 2000;
-					const increment = target / (duration / 20);
+  if (testimonials.length > 1 && dotsContainer) {
+    testimonials.forEach((_, index) => {
+      const dot = document.createElement('button');
+      dot.className = `testimonial-dot${index === 0 ? ' active' : ''}`;
+      dot.type = 'button';
+      dot.setAttribute('aria-label', `Ver depoimento ${index + 1}`);
+      dot.addEventListener('click', () => { showTestimonial(index); restartTestimonials(); });
+      dotsContainer.appendChild(dot);
+    });
 
-					const updateCounter = () => {
-						value += increment;
+    function restartTestimonials() {
+      clearInterval(testimonialTimer);
+      if (!reducedMotion) testimonialTimer = setInterval(() => showTestimonial((testimonialIndex + 1) % testimonials.length), 5500);
+    }
+    restartTestimonials();
+  }
 
-						if (value < target) {
-							counter.textContent = Math.floor(value);
-							requestAnimationFrame(updateCounter);
-						} else {
-							counter.textContent = target;
-						}
-					};
+  const form = document.querySelector('#whatsappForm');
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = {
+      name: document.querySelector('#name')?.value.trim(),
+      email: document.querySelector('#email')?.value.trim(),
+      phone: document.querySelector('#phone')?.value.trim(),
+      type: document.querySelector('#type')?.value,
+      message: document.querySelector('#message')?.value.trim(),
+    };
+    const text = `Olá, gostaria de solicitar um projeto de arquitetura.\n\nNome: ${data.name}\nEmail: ${data.email}\nTelefone: ${data.phone}\nTipo de projeto: ${data.type}\n\nMensagem:\n${data.message}`;
+    window.open(`https://wa.me/5583991497634?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+  });
 
-					updateCounter();
-					counterObserver.unobserve(counter);
-				}
-			});
-		},
-		{
-			threshold: 0.5,
-		},
-	);
+  const whatsapp = document.querySelector('.whatsapp');
+  if (whatsapp) {
+    whatsapp.href = 'https://wa.me/5583991497634';
+    whatsapp.target = '_blank';
+    whatsapp.rel = 'noopener noreferrer';
+  }
 
-	counters.forEach((counter) => {
-		counterObserver.observe(counter);
-	});
+  backToTop?.addEventListener('click', (event) => {
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+  });
 
-	const testimonials = document.querySelectorAll('.testimonial');
-	let testimonialIndex = 0;
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', function (event) {
+      const href = this.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        event.preventDefault();
+        target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' });
+      }
+    });
+  });
 
-	function changeTestimonial() {
-		if (testimonials.length <= 1) return;
-
-		testimonials[testimonialIndex].classList.remove('active');
-		testimonialIndex++;
-
-		if (testimonialIndex >= testimonials.length) {
-			testimonialIndex = 0;
-		}
-
-		testimonials[testimonialIndex].classList.add('active');
-	}
-
-	setInterval(changeTestimonial, 5000);
-
-	const whatsappForm = document.querySelector('#whatsappForm');
-
-	if (whatsappForm) {
-		whatsappForm.addEventListener('submit', (event) => {
-			event.preventDefault();
-
-			const name = document.querySelector('#name').value;
-			const email = document.querySelector('#email').value;
-			const phone = document.querySelector('#phone').value;
-			const type = document.querySelector('#type').value;
-			const message = document.querySelector('#message').value;
-
-			const whatsappNumber = '5583991497634';
-
-			const text = `Olá, gostaria de solicitar um projeto de arquitetura.
-
-Nome: ${name}
-Email: ${email}
-Telefone: ${phone}
-Tipo de projeto: ${type}
-
-Mensagem:
-${message}`;
-
-			const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-				text,
-			)}`;
-
-			window.open(url, '_blank');
-		});
-	}
-
-	const whatsappButton = document.querySelector('.whatsapp');
-
-	if (whatsappButton) {
-		whatsappButton.href = 'https://wa.me/5583991497634';
-		whatsappButton.target = '_blank';
-	}
-
-	if (backToTop) {
-		backToTop.addEventListener('click', (e) => {
-			e.preventDefault();
-
-			window.scrollTo({
-				top: 0,
-				behavior: 'smooth',
-			});
-		});
-	}
-
-	document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-		anchor.addEventListener('click', function (e) {
-			const target = document.querySelector(this.getAttribute('href'));
-
-			if (target) {
-				e.preventDefault();
-				target.scrollIntoView({
-					behavior: 'smooth',
-				});
-			}
-		});
-	});
-
-	const projects = document.querySelectorAll('.project');
-
-	projects.forEach((project) => {
-		project.addEventListener('mouseenter', () => {
-			project.style.transform = 'translateY(-8px)';
-		});
-
-		project.addEventListener('mouseleave', () => {
-			project.style.transform = 'translateY(0)';
-		});
-	});
-
-	let lastScroll = 0;
-
-	window.addEventListener('scroll', () => {
-		const current = window.scrollY;
-
-		if (current > lastScroll && current > 300) {
-			header.style.transform = 'translateY(-100%)';
-		} else {
-			header.style.transform = 'translateY(0)';
-		}
-
-		lastScroll = current;
-	});
+  const sections = [...document.querySelectorAll('main section[id]')];
+  const menuLinks = [...document.querySelectorAll('.menu a[href^="#"]')];
+  if ('IntersectionObserver' in window) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          menuLinks.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`));
+        }
+      });
+    }, { rootMargin: '-35% 0px -55%' });
+    sections.forEach((section) => sectionObserver.observe(section));
+  }
 });

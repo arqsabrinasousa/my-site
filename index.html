@@ -85,7 +85,7 @@
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-YJQ2J9GGVZ"></script>
 	<script>
 		window.dataLayer = window.dataLayer || [];
-		function gtag() {dataLayer.push(arguments);}
+		function gtag() { dataLayer.push(arguments); }
 		gtag('js', new Date());
 
 		gtag('config', 'G-YJQ2J9GGVZ');
@@ -93,12 +93,13 @@
 </head>
 
 <body>
+	<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 	<header class="header">
 		<nav class="navbar">
 			<a href="#" class="logo">
 				<img src="./img/logo.png" alt="Sabrina Sousa Arquitetura" />
 			</a>
-			<ul class="menu">
+			<ul class="menu" id="menu-principal">
 				<li><a href="#sobre">Sobre</a></li>
 				<li><a href="#servicos">Serviços</a></li>
 				<li><a href="#portfolio">Projetos</a></li>
@@ -106,14 +107,15 @@
 				<li><a href="#contato">Contato</a></li>
 			</ul>
 			<a href="#contato" class="nav-button">
-				Solicitar Orçamento </a><button class="menu-toggle" aria-label="Abrir menu">
+				Solicitar Orçamento </a><button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false"
+				aria-controls="menu-principal">
 				<span></span>
 				<span></span>
 				<span></span>
 			</button>
 		</nav>
 	</header>
-	<main>
+	<main id="conteudo">
 		<section class="hero">
 			<div class="hero-overlay"></div>
 			<div class="hero-content reveal">
@@ -127,10 +129,14 @@
 					Projetos exclusivos que unem estética, funcionalidade e identidade
 					para transformar ambientes em experiências únicas.
 				</p>
+				<div class="hero-actions">
+					<a href="#portfolio" class="button primary">Conhecer projetos</a>
+					<a href="#contato" class="button secondary">Falar com a arquiteta</a>
+				</div>
 			</div>
 			<div class="scroll-indicator"><span></span></div>
 		</section>
-		<section id="sobre" class="section">
+		<section id="sobre" class="section section-about">
 			<div class="container about">
 				<div class="image reveal">
 					<img src="img/sobre.jpg" alt="Interior moderno projetado pelo escritório" loading="lazy" />
@@ -166,7 +172,7 @@
 				</div>
 			</div>
 		</section>
-		<section id="servicos" class="section gray">
+		<section id="servicos" class="section gray section-services">
 			<div class="container">
 				<div class="heading reveal">
 					<span> Serviços </span>
@@ -208,7 +214,7 @@
 				</div>
 			</div>
 		</section>
-		<section id="portfolio" class="section">
+		<section id="portfolio" class="section section-portfolio">
 			<div class="container">
 				<div class="heading reveal">
 					<span> Portfólio </span>
@@ -234,6 +240,18 @@
 						<div>
 							<h3>Espaço Minimalista</h3>
 							<span>Elegância Funcional</span>
+						</div>
+					</a>
+					</a><a class="project reveal"><img src="img/projeto-5.png" alt="Casa moderna" />
+						<div>
+							<h3>Espaço Sofisticado</h3>
+							<span>Design em Tons Escuros</span>
+						</div>
+					</a>
+					</a><a class="project reveal"><img src="img/projeto-6.png" alt="Casa moderna" />
+						<div>
+							<h3>Espaço Clean</h3>
+							<span>Leveza e Aconchego</span>
 						</div>
 					</a>
 				</div>
@@ -270,7 +288,7 @@
 				</div>
 			</div>
 		</section>
-		<section id="processo" class="section">
+		<section id="processo" class="section section-process">
 			<div class="container">
 				<div class="heading">
 					<span> Processo </span>
@@ -318,7 +336,7 @@
 					<span> Depoimentos </span>
 					<h2>Clientes satisfeitos</h2>
 				</div>
-				<div class="testimonial-slider">
+				<div class="testimonial-slider" aria-live="polite">
 					<article class="testimonial active">
 						<p>
 							"Amamos tudooo! A forma como você fez a entrega deixou tudo ainda mais inesquecível."
@@ -347,6 +365,7 @@
 						<strong>Silas Sousa</strong>
 					</article>
 				</div>
+				<div class="testimonial-dots" aria-label="Selecionar depoimento"></div>
 			</div>
 		</section>
 		<section class="cta">
@@ -362,7 +381,7 @@
 				</a>
 			</div>
 		</section>
-		<section id="contato" class="section">
+		<section id="contato" class="section section-contact">
 			<div class="container contact">
 				<div>
 					<div class="heading">
@@ -405,11 +424,31 @@
 				<a class="logo"> Sabrina Sousa<span>.</span> </a>
 				<p>Arquitetura contemporânea e projetos exclusivos.</p>
 			</div>
-			<div>
+			<div class="footer-column">
 				<h3>Links</h3>
-				<a href="#sobre"> Sobre </a><a href="#portfolio"> Projetos </a><a href="#"> Privacidade </a>
+				<nav class="footer-links" aria-label="Links do rodapé">
+					<a href="#sobre" class="footer-link">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+							<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v4h4v2h-6V7h2Z" />
+						</svg>
+						Sobre
+					</a>
+					<a href="#portfolio" class="footer-link">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+							<path d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z" />
+						</svg>
+						Projetos
+					</a>
+					<a href="#" class="footer-link">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+							<path
+								d="M12 2 4 5v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V5l-8-3Zm0 2.18 6 2.25V11c0 4.05-2.47 7.67-6 8.82C8.47 18.67 6 15.05 6 11V6.43l6-2.25Z" />
+						</svg>
+						Privacidade
+					</a>
+				</nav>
 			</div>
-			<div>
+			<div class="footer-column">
 				<h3>Redes</h3>
 				<a href="https://www.instagram.com/arq.sabrinasousa" class="social-link" target="_blank"
 					rel="noopener noreferrer">
